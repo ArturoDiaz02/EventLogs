@@ -3,7 +3,7 @@
 1. Clona este repositorio en tu máquina local:
 
    ```bash
-   git clone [https://github.com/tu-usuario/mi-proyecto-de-eventos.git](https://github.com/ArturoDiaz02/EventLogs)
+   git clone https://github.com/ArturoDiaz02/EventLogs
    ```
 
 2. Cambia al directorio raíz del proyecto:
