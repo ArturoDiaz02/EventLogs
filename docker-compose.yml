@@ -1,0 +1,61 @@
+version: '3'
+services:
+  # Database Core TTT
+  mongoCore:
+    image: mongo:latest
+    container_name: mongoDBCore
+    restart: unless-stopped
+    volumes:
+      # Preserve database after container is deleted
+      - ../db/coreData:/data/db
+    environment:
+      # Set required env variables to access MongoDB
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27017:27017"
+
+  # GUI Database Core TTT
+  mongo-express-core:
+    image: mongo-express
+    container_name: mongoExpressCore
+    ports:
+      - "8081:8081"
+    restart: always
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: password
+      ME_CONFIG_MONGODB_SERVER: mongoCore
+    depends_on:
+      - mongoCore
+
+  core:
+    build:
+      context: ./fk-core
+      dockerfile: Dockerfile
+    container_name: core
+    ports:
+      - "3000:3000"
+    restart: always
+    environment:
+      - MONGODB_URI=mongodb://root:example@mongoCore:27017/core?authSource=admin
+      - PORT=3000
+    depends_on:
+      - mongoCore
+
+  front:
+    build:
+      context: ./fk-front
+      dockerfile: Dockerfile
+    container_name: front
+    ports:
+      - "5173:5173"
+    restart: always
+    environment:
+      - EVENT_API_URL=http://core:3000/api/events
+    depends_on:
+      - core
+
+
